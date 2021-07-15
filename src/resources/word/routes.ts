@@ -14,9 +14,7 @@ router.post(
     { name: 'image', maxCount: 1 },
     { name: 'audio', maxCount: 1 },
   ]),
-  async function (req, res) {
-    console.log('hey rouyte');
-
+  async (req, res) => {
     let files: { [fieldname: string]: Express.Multer.File[] } = {};
     try {
       files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -33,8 +31,7 @@ router.post(
         audio: audioResult.secure_url,
       });
     } catch (error) {
-      console.log('error', error);
-
+      console.error('error', error);
       res.send(error);
     }
     fs.unlink(files['image'][0].path);
