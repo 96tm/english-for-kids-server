@@ -1,3 +1,6 @@
+.prettierrc
+.eslintrc.json
+
 # Logs
 logs
 *.log
