@@ -23,17 +23,15 @@ router.post(
       const imageResult = await cloudinary.uploader.upload(
         String(files['image'][0].path)
       );
-      console.log('upload img');
-
       const audioResult = await cloudinary.uploader.upload(
         String(files['audio'][0].path),
         { resource_type: 'video' }
       );
-      console.log('upload audio');
-
       console.log('result', imageResult, audioResult);
-
-      res.send('done');
+      res.json({
+        image: imageResult.secure_url,
+        audio: audioResult.secure_url,
+      });
     } catch (error) {
       console.log('error', error);
 

@@ -6,7 +6,9 @@ import { cloud_name, api_key, api_secret } from './config';
 
 import { v2 as cloudinary } from 'cloudinary';
 
-import { router as wordsRouter } from './routes/routes';
+import { router as wordsRouter } from './resources/word/routes';
+
+import './db';
 
 const app = express();
 
@@ -16,8 +18,6 @@ cloudinary.config({
   api_secret,
   secure: true,
 });
-
-console.log(cloud_name, api_key, api_secret);
 
 app.use(
   cors({
