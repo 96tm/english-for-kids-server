@@ -8,8 +8,9 @@ import { cloud_name, api_key, api_secret } from './config';
 
 import { v2 as cloudinary } from 'cloudinary';
 
-import { router as wordsRouter } from './resources/word/routes';
-import { router as categoriesRouter } from './resources/category/routes';
+import { router as wordsRouter } from './resources/word/router';
+import { router as categoriesRouter } from './resources/category/router';
+import { router as userRouter } from './resources/user/router';
 
 import './db';
 
@@ -30,6 +31,7 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/', userRouter);
 app.use('/categories', categoriesRouter);
 app.use('/categories', wordsRouter);
 

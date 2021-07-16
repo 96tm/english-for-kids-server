@@ -9,6 +9,7 @@ const PORT = process.env['PORT'];
 const NODE_ENV = process.env['NODE_ENV'];
 const JWT_SECRET_KEY = process.env['JWT_SECRET_KEY'];
 const MONGO_CONNECTION_STRING = String(process.env['MONGO_CONNECTION_STRING']);
+const SALT_ROUNDS = Number(process.env['SALT_ROUNDS']);
 // const CLOUDINARY_URL = process.env['CLOUDINARY_URL'];
 const cloud_name = process.env['CLOUD_NAME'];
 const api_key = process.env['API_KEY'];
@@ -19,6 +20,7 @@ export {
   NODE_ENV,
   JWT_SECRET_KEY,
   MONGO_CONNECTION_STRING,
+  SALT_ROUNDS,
   cloud_name,
   api_key,
   api_secret,
