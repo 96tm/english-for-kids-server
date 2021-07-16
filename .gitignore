@@ -1,5 +1,6 @@
 .prettierrc
 .eslintrc.json
+tmp
 
 # Logs
 logs

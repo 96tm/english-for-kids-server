@@ -29,9 +29,9 @@ app.use(
 );
 
 app.use(bodyParser.json());
-
-app.use('/words', wordsRouter);
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/categories', categoriesRouter);
+app.use('/categories', wordsRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
