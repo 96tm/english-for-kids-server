@@ -6,7 +6,6 @@ dotenv.config({
 });
 
 const PORT = process.env['PORT'];
-const NODE_ENV = process.env['NODE_ENV'];
 const JWT_SECRET_KEY = process.env['JWT_SECRET_KEY'];
 const MONGO_CONNECTION_STRING = String(process.env['MONGO_CONNECTION_STRING']);
 const SALT_ROUNDS = Number(process.env['SALT_ROUNDS']);
@@ -21,7 +20,6 @@ const api_secret = process.env['API_SECRET'];
 
 export {
   PORT,
-  NODE_ENV,
   JWT_SECRET_KEY,
   MONGO_CONNECTION_STRING,
   SALT_ROUNDS,
