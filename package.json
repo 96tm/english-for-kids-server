@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Server for a client-server app written for a RSSchool Front-end course",
   "main": "index.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "start": "nodemon -L --exitcrash -w 'src/**/*.ts' --exec ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
