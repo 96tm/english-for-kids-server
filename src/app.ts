@@ -10,8 +10,6 @@ import { router as wordsRouter } from './resources/word/router';
 import { router as categoriesRouter } from './resources/category/router';
 import { router as userRouter } from './resources/user/router';
 
-import { CORS_ORIGIN } from './config';
-
 import './db';
 
 const app = express();
@@ -23,11 +21,7 @@ cloudinary.config({
   secure: true,
 });
 
-app.use(
-  cors({
-    origin: CORS_ORIGIN,
-  })
-);
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
