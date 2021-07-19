@@ -1,18 +1,25 @@
-import { ICategory, CategoryModel } from './Category';
 import { IWord, WordModel } from '../word/Word';
 import { deleteWord } from '../word/service';
 import IWordDTO from '../word/IWordDTO';
 
-async function getAll(): Promise<ICategory[]> {
-  const categories = await CategoryModel.find({}).populate('words');
-  const result = categories.map(
-    (categoryDTO: { name: string; words: string[] }) => {
-      return {
-        name: categoryDTO.name,
-        numberOfWords: categoryDTO.words.length,
-      };
-    }
+import ICategoryDTO from './ICategoryDTO';
+import { ICategory, CategoryModel } from './Category';
+
+async function getAll(): Promise<ICategoryDTO[]> {
+  const categories: ICategory[] = await CategoryModel.find({}).populate(
+    'words'
   );
+  const result = categories.map((category) => {
+    const wordsLength = category.words.length;
+    const randomWordImage = wordsLength
+      ? category.words[Math.floor(Math.random() * wordsLength)].image
+      : '';
+    return {
+      name: category.name,
+      numberOfWords: category.words.length,
+      randomWordImage,
+    };
+  });
   return result;
 }
 
@@ -26,15 +33,22 @@ async function getWords(name: string): Promise<IWord[]> {
 }
 
 async function update(name: string, newName: string): Promise<ICategory> {
-  return CategoryModel.findOneAndUpdate({ name }, { name: newName });
+  return CategoryModel.findOneAndUpdate(
+    { name },
+    { name: newName },
+    { returnOriginal: false }
+  );
 }
 
 async function deleteCategory(name: string): Promise<ICategory> {
   const category = await CategoryModel.findOne({ name }).populate('words');
+  const promises: Promise<IWord>[] = [];
   (category.words as IWordDTO[]).forEach((word) => {
-    deleteWord(word.word);
+    promises.push(deleteWord(name, word.word));
   });
-  return CategoryModel.deleteOne({ name });
+  await Promise.all(promises);
+  await CategoryModel.deleteOne({ name });
+  return category;
 }
 
 async function add(name: string): Promise<ICategory> {

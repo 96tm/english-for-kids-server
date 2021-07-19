@@ -1,24 +1,22 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 import { MONGO_CONNECTION_STRING, SALT_ROUNDS } from './config';
 import { UserModel } from './resources/user/User';
-
-import bcrypt from 'bcrypt';
-
-const mongoDB = MONGO_CONNECTION_STRING;
 
 (async function runDb(): Promise<void> {
   try {
     mongoose.set('useNewUrlParser', true);
     mongoose.set('useFindAndModify', false);
     mongoose.set('useCreateIndex', true);
-    await mongoose.connect(mongoDB, {
+    mongoose.set('useUnifiedTopology', true);
+    await mongoose.connect(MONGO_CONNECTION_STRING, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
     await createAdmin();
   } catch (err) {
-    console.error('connection error', err);
+    console.error('Connection error', err);
   }
 })();
 

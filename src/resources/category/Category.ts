@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { IWord } from '../word/Word';
 
 interface ICategory {
@@ -7,7 +8,7 @@ interface ICategory {
 }
 
 const categorySchema = new mongoose.Schema({
-  name: { type: String, required: true, maxlength: 50 },
+  name: { type: String, required: true, unique: true, maxlength: 50 },
   words: [
     {
       type: mongoose.Schema.Types.ObjectId,

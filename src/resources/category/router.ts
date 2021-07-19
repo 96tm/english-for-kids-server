@@ -13,23 +13,45 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const { name } = req.body;
-  const category = await addCategory(name);
-  res.status(StatusCodes.CREATED).json(category);
+  try {
+    const category = await addCategory(name);
+    res.status(StatusCodes.CREATED).json(category);
+  } catch (err) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: 'error',
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Invalid category data`,
+    });
+  }
 });
 
 router.delete('/:name', async (req, res) => {
   const name = req.params.name as string;
-  const category = deleteCategory(name);
-  res.status(StatusCodes.NO_CONTENT).json(category);
+  try {
+    const category = await deleteCategory(name);
+    res.json({ name: category.name, numberOfWords: category.words.length });
+  } catch (err) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: 'error',
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Invalid category data`,
+    });
+  }
 });
 
 router.put('/:name', async (req, res) => {
-  const name = req.params.name as string;
-  const { newName } = req.body;
-  console.log(name, newName);
-
-  const category = update(name, newName);
-  res.status(StatusCodes.NO_CONTENT).json(category);
+  try {
+    const name = req.params.name as string;
+    const { newName } = req.body;
+    const category = await update(name, newName);
+    res.json(category);
+  } catch (err) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: 'error',
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Invalid category data`,
+    });
+  }
 });
 
 export { router };
