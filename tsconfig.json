@@ -3,7 +3,7 @@
     "target": "es2020",
     "module": "CommonJS",
     "allowJs": false,
-    "outDir": "./build",
+    "outDir": "./dist",
     "rootDir": "./src",
     "downlevelIteration": false,
     "strict": true,
