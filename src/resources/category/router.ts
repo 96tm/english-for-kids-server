@@ -22,8 +22,6 @@ router.get('/', async (req, res) => {
   const limitNumber = isValidNumber(Number(limit))
     ? Number(limit)
     : CATEGORIES_PER_PAGE;
-  console.log(pageNumber, limitNumber);
-
   const categories = await getCategories(pageNumber, limitNumber);
   res.json(categories);
 });

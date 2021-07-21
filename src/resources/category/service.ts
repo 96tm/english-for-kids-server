@@ -7,7 +7,7 @@ import { ICategory, CategoryModel } from './Category';
 
 async function getCategories(page = 1, limit = 0): Promise<ICategoryDTO[]> {
   const categories: ICategory[] = await CategoryModel.find({})
-    .skip(page - 1)
+    .skip((page - 1) * limit)
     .limit(limit)
     .populate('words');
   const result = categories.map((category) => {

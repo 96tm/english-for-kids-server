@@ -36,14 +36,24 @@ router.get('/:category/words', async (req, res) => {
     const { word, translation, audioSrc, image } = wordDocument;
     return { category, word, translation, audioSrc, image };
   });
-  console.log(words, DTOWords);
   res.json(DTOWords);
 });
 
 router.delete('/:category/words/:word', async (req, res) => {
-  const { category, word } = req.params;
-  const wordModel = await deleteWord(category.trim(), word.trim());
-  res.json(wordModel);
+  const category = req.params.category.trim();
+  const word = req.params.word.trim();
+  try {
+    const deletedWord = await deleteWord(category, word);
+    const { word: foundWord, translation, imageSrc, audio } = deletedWord;
+    res.json({ word: foundWord, translation, imageSrc, audio });
+  } catch (err) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      status: 'error',
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: `Invalid word data`,
+    });
+  }
+  // const wordModel = await deleteWord(category.trim(), word.trim());
 });
 
 router.put(

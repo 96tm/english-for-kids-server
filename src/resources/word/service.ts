@@ -26,7 +26,7 @@ async function deleteWord(category: string, word: string): Promise<IWord> {
     categoryModel.words = (categoryModel.words as IWordDTO[]).filter(
       (currentWord) => currentWord.word !== word
     );
-    return WordModel.deleteOne({ word });
+    await WordModel.deleteOne({ word });
   } catch (err) {
     console.error('Error while deleting word: ', err);
   }
@@ -36,7 +36,7 @@ async function deleteWord(category: string, word: string): Promise<IWord> {
 async function getWords(name: string, page = 1, limit = 0): Promise<IWord[]> {
   const category = await CategoryModel.findOne({ name });
   return WordModel.find({ category: category._id })
-    .skip(page - 1)
+    .skip((page - 1) * limit)
     .limit(limit);
 }
 
