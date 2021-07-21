@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 interface IWord {
+  [key: string]: string;
   word: string;
   translation: string;
   audioSrc: string;

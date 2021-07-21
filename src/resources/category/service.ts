@@ -1,14 +1,15 @@
-import { IWord, WordModel } from '../word/Word';
+import { IWord } from '../word/Word';
 import { deleteWord } from '../word/service';
 import IWordDTO from '../word/IWordDTO';
 
 import ICategoryDTO from './ICategoryDTO';
 import { ICategory, CategoryModel } from './Category';
 
-async function getAll(): Promise<ICategoryDTO[]> {
-  const categories: ICategory[] = await CategoryModel.find({}).populate(
-    'words'
-  );
+async function getCategories(page = 1, limit = 0): Promise<ICategoryDTO[]> {
+  const categories: ICategory[] = await CategoryModel.find({})
+    .skip(page - 1)
+    .limit(limit)
+    .populate('words');
   const result = categories.map((category) => {
     const wordsLength = category.words.length;
     const randomWordImage = wordsLength
@@ -25,11 +26,6 @@ async function getAll(): Promise<ICategoryDTO[]> {
 
 async function getByName(name: string): Promise<ICategory | null> {
   return CategoryModel.findOne({ name });
-}
-
-async function getWords(name: string): Promise<IWord[]> {
-  const category = await CategoryModel.findOne({ name }).populate('words');
-  return WordModel.find({ category: category._id });
 }
 
 async function update(name: string, newName: string): Promise<ICategory> {
@@ -57,4 +53,4 @@ async function add(name: string): Promise<ICategory> {
   return category;
 }
 
-export { getAll, getWords, getByName, update, deleteCategory, add };
+export { getCategories, getByName, update, deleteCategory, add };

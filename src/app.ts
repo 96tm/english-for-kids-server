@@ -25,6 +25,14 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    for (const [key, value] of Object.entries(req.body)) {
+      req.body[key] = (value as string).trim();
+    }
+  }
+  next();
+});
 app.use('/', userRouter);
 app.use('/categories', categoriesRouter);
 app.use('/categories', wordsRouter);

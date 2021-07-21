@@ -33,6 +33,13 @@ async function deleteWord(category: string, word: string): Promise<IWord> {
   return wordModel;
 }
 
+async function getWords(name: string, page = 1, limit = 0): Promise<IWord[]> {
+  const category = await CategoryModel.findOne({ name });
+  return WordModel.find({ category: category._id })
+    .skip(page - 1)
+    .limit(limit);
+}
+
 async function add({
   category,
   word,
@@ -54,4 +61,4 @@ async function add({
   return wordModel;
 }
 
-export { update, deleteWord, add };
+export { getWords, update, deleteWord, add };

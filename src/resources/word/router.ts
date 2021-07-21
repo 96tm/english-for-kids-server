@@ -6,24 +6,44 @@ import { promises as fs } from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import { StatusCodes } from 'http-status-codes';
 
-import { getWords } from '../category/service';
-import { add as addWord, deleteWord, update as updateWord } from './service';
+import {
+  getWords,
+  add as addWord,
+  deleteWord,
+  update as updateWord,
+} from './service';
 
 import { IMAGE_URL_PREFIX, AUDIO_URL_PREFIX, VALID_STRING } from '../../config';
+import { isValidNumber } from '../util/util';
 
 const loader = multer({ dest: path.join(__dirname, 'tmp') });
 const router = express.Router();
 
-router.delete('/:category/words/:word', async (req, res) => {
-  const { category, word } = req.params;
-  const wordModel = await deleteWord(category, word);
-  res.json(wordModel);
-});
+import { WORDS_PER_PAGE } from '../../config';
+import { IWord } from './Word';
+import IWordDTO from './IWordDTO';
 
 router.get('/:category/words', async (req, res) => {
-  const category = req.params.category as string;
-  const words = await getWords(category);
-  res.json(words);
+  const category = req.params.category.trim();
+  const page = (req.query?.page as string).trim();
+  const limit = (req.query?.limit as string).trim();
+  const pageNumber = isValidNumber(Number(page)) ? Number(page) : 1;
+  const limitNumber = isValidNumber(Number(limit))
+    ? Number(limit)
+    : WORDS_PER_PAGE;
+  const words: IWord[] = await getWords(category, pageNumber, limitNumber);
+  const DTOWords: IWordDTO[] = words.map((wordDocument) => {
+    const { word, translation, audioSrc, image } = wordDocument;
+    return { category, word, translation, audioSrc, image };
+  });
+  console.log(words, DTOWords);
+  res.json(DTOWords);
+});
+
+router.delete('/:category/words/:word', async (req, res) => {
+  const { category, word } = req.params;
+  const wordModel = await deleteWord(category.trim(), word.trim());
+  res.json(wordModel);
 });
 
 router.put(
@@ -36,7 +56,7 @@ router.put(
     let files: { [fieldname: string]: Express.Multer.File[] } = {};
     try {
       files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      const { word } = req.params;
+      const word = req.params.word.trim();
       const { category, word: newWord, translation } = req.body;
       if (
         !(
@@ -48,7 +68,7 @@ router.put(
         res.status(StatusCodes.BAD_REQUEST).json({
           status: 'error',
           statusCode: StatusCodes.BAD_REQUEST,
-          message: `All text data must contain only latin letters and/or digits`,
+          message: `All text data must contain only latin letters, digits, (, ), -, _ and spaces`,
         });
       }
       const imageFiles = files['image'];
