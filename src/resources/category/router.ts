@@ -9,64 +9,97 @@ import {
   update,
 } from './service';
 
-import { isValidNumber } from '../util/util';
+import {
+  isValidNumber,
+  MONGO_DUPLICATION_ERROR_CODE,
+  checkStrings,
+  ACCEPTABLE_CHARACTERS,
+} from '../../util/util';
 
 import { CATEGORIES_PER_PAGE } from '../../config';
 
+import { ErrorHandler } from '../../error-handling/ErrorHandler';
+import CustomError from '../../error-handling/CustomError';
+
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const page = (req.query?.page as string).trim();
-  const limit = (req.query?.limit as string).trim();
-  const pageNumber = isValidNumber(Number(page)) ? Number(page) : 1;
-  const limitNumber = isValidNumber(Number(limit))
-    ? Number(limit)
-    : CATEGORIES_PER_PAGE;
-  const categories = await getCategories(pageNumber, limitNumber);
-  res.json(categories);
-});
+const handleErrors = ErrorHandler.handleErrors;
 
-router.post('/', async (req, res) => {
-  const { name } = req.body;
-  try {
-    const category = await addCategory(name);
-    res.status(StatusCodes.CREATED).json(category);
-  } catch (err) {
-    res.status(StatusCodes.BAD_REQUEST).json({
-      status: 'error',
-      statusCode: StatusCodes.BAD_REQUEST,
-      message: `Invalid category data`,
-    });
-  }
-});
+router.get(
+  '/',
+  handleErrors(async (req, res) => {
+    const page = (req.query?.page as string).trim();
+    const limit = (req.query?.limit as string).trim();
+    const pageNumber = isValidNumber(Number(page)) ? Number(page) : 1;
+    const limitNumber = isValidNumber(Number(limit))
+      ? Number(limit)
+      : CATEGORIES_PER_PAGE;
+    const categories = await getCategories(pageNumber, limitNumber);
+    res.json(categories);
+  })
+);
 
-router.delete('/:name', async (req, res) => {
-  const name = req.params.name.trim();
-  try {
-    const category = await deleteCategory(name);
-    res.json({ name: category.name, numberOfWords: category.words.length });
-  } catch (err) {
-    res.status(StatusCodes.BAD_REQUEST).json({
-      status: 'error',
-      statusCode: StatusCodes.BAD_REQUEST,
-      message: `Invalid category data`,
-    });
-  }
-});
+router.post(
+  '/',
+  handleErrors(async (req, res) => {
+    const { name } = req.body;
+    try {
+      const category = await addCategory(name);
+      if (!checkStrings(name)) {
+        throw new CustomError(
+          StatusCodes.BAD_REQUEST,
+          `Category name must contain only ${ACCEPTABLE_CHARACTERS}`
+        );
+      }
+      res.status(StatusCodes.CREATED).json(category);
+    } catch (err) {
+      console.error('Category creation error:', err);
+      let errorMessage = 'Invalid category data';
+      if (err.code === MONGO_DUPLICATION_ERROR_CODE) {
+        errorMessage = `Category "${name} already exists"`;
+      }
+      throw new CustomError(StatusCodes.BAD_REQUEST, errorMessage);
+    }
+  })
+);
 
-router.put('/:name', async (req, res) => {
-  try {
+router.delete(
+  '/:name',
+  handleErrors(async (req, res) => {
+    const name = req.params.name.trim();
+    try {
+      const category = await deleteCategory(name);
+      res.json({ name: category.name, numberOfWords: category.words.length });
+    } catch (err) {
+      console.error('Category deletion error:', err);
+      throw new CustomError(StatusCodes.BAD_REQUEST, 'Invalid category data');
+    }
+  })
+);
+
+router.put(
+  '/:name',
+  handleErrors(async (req, res) => {
     const name = req.params.name.trim();
     const { newName } = req.body;
-    const category = await update(name, newName);
-    res.json(category);
-  } catch (err) {
-    res.status(StatusCodes.BAD_REQUEST).json({
-      status: 'error',
-      statusCode: StatusCodes.BAD_REQUEST,
-      message: `Invalid category data`,
-    });
-  }
-});
+    try {
+      if (!checkStrings(name, newName)) {
+        throw new CustomError(
+          StatusCodes.BAD_REQUEST,
+          `Category name must contain only ${ACCEPTABLE_CHARACTERS}`
+        );
+      }
+      const category = await update(name, newName);
+      res.json(category);
+    } catch (err) {
+      console.error('Category update error:', err);
+      let errorMessage = 'Invalid category data';
+      if (err.code === MONGO_DUPLICATION_ERROR_CODE) {
+        errorMessage = `Category "${newName}" already exists"`;
+      }
+      throw new CustomError(StatusCodes.BAD_REQUEST, errorMessage);
+    }
+  })
+);
 
 export { router };

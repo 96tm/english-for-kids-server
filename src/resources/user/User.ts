@@ -10,4 +10,6 @@ const userSchema = new mongoose.Schema<IUser>({
   hash: { type: String, maxlength: 100 },
 });
 
-export const UserModel = mongoose.model<IUser>('User', userSchema);
+const UserModel = mongoose.model<IUser>('User', userSchema);
+
+export { IUser, UserModel };
