@@ -9,7 +9,9 @@ import { UserModel } from './User';
 
 import { ErrorHandler } from '../../error-handling/ErrorHandler';
 import CustomError from '../../error-handling/CustomError';
+
 import { JWT_SECRET_KEY } from '../../config';
+
 import { AUTH_EXPIRATION_TIME } from '../../util/util';
 
 import { AuthService } from '../../auth/service';

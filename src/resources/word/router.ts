@@ -21,6 +21,7 @@ import {
 } from '../../util/util';
 
 import { WORDS_PER_PAGE } from '../../config';
+
 import { IWord } from './Word';
 import IWordDTO from './IWordDTO';
 
