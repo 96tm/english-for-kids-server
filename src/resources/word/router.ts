@@ -27,6 +27,8 @@ import IWordDTO from './IWordDTO';
 import { ErrorHandler } from '../../error-handling/ErrorHandler';
 import CustomError from '../../error-handling/CustomError';
 
+import { AuthService } from '../../auth/service';
+
 const loader = multer({ dest: path.join(__dirname, 'tmp') });
 
 const router = express.Router();
@@ -54,6 +56,7 @@ router.get(
 
 router.delete(
   '/:category/words/:word',
+  AuthService.authorize,
   handleErrors(async (req, res) => {
     const category = req.params.category.trim();
     const word = req.params.word.trim();
@@ -74,6 +77,7 @@ router.put(
     { name: 'image', maxCount: 1 },
     { name: 'audio', maxCount: 1 },
   ]),
+  AuthService.authorize,
   handleErrors(async (req, res) => {
     let files: { [fieldname: string]: Express.Multer.File[] } = {};
     const word = req.params.word.trim();
@@ -123,6 +127,7 @@ router.post(
     { name: 'image', maxCount: 1 },
     { name: 'audio', maxCount: 1 },
   ]),
+  AuthService.authorize,
   handleErrors(async (req, res) => {
     let files: { [fieldname: string]: Express.Multer.File[] } = {};
     let imageFiles = null;

@@ -20,6 +20,7 @@ import { CATEGORIES_PER_PAGE } from '../../config';
 
 import { ErrorHandler } from '../../error-handling/ErrorHandler';
 import CustomError from '../../error-handling/CustomError';
+import { AuthService } from '../../auth/service';
 
 const router = express.Router();
 
@@ -41,6 +42,7 @@ router.get(
 
 router.post(
   '/',
+  AuthService.authorize,
   handleErrors(async (req, res) => {
     const { name } = req.body;
     try {
@@ -65,6 +67,7 @@ router.post(
 
 router.delete(
   '/:name',
+  AuthService.authorize,
   handleErrors(async (req, res) => {
     const name = req.params.name.trim();
     try {
@@ -79,6 +82,7 @@ router.delete(
 
 router.put(
   '/:name',
+  AuthService.authorize,
   handleErrors(async (req, res) => {
     const name = req.params.name.trim();
     const { newName } = req.body;

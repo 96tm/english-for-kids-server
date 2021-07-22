@@ -8,6 +8,8 @@ const ACCEPTABLE_CHARACTERS = 'latin letters, digits, (,),-,_ and spaces';
 
 const MONGO_DUPLICATION_ERROR_CODE = 11000;
 
+const AUTH_EXPIRATION_TIME = 60 * 60;
+
 function isValidNumber(number: number): boolean {
   return 0 <= number && number <= Number.MAX_SAFE_INTEGER;
 }
@@ -43,4 +45,5 @@ export {
   VALID_STRING,
   MONGO_DUPLICATION_ERROR_CODE,
   ACCEPTABLE_CHARACTERS,
+  AUTH_EXPIRATION_TIME,
 };
