@@ -22,7 +22,7 @@ import path from 'path';
 
 const app = express();
 const errorHandler = new ErrorHandler();
-const swaggerDocument = YAML.load(path.join(__dirname, './doc/api.yaml'));
+const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
 cloudinary.config({
   cloud_name,
