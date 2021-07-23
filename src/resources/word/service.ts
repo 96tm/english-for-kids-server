@@ -8,8 +8,8 @@ async function update(
 ): Promise<IWord> {
   const wordModel = await WordModel.findOne({ word });
   Object.assign(wordModel, {
-    word: newWord,
-    translation,
+    word: newWord || wordModel.word,
+    translation: translation || wordModel.translation,
     audioSrc: audioSrc || wordModel.audioSrc,
     image: image || wordModel.image,
   });
@@ -35,9 +35,12 @@ async function deleteWord(category: string, word: string): Promise<IWord> {
 
 async function getWords(name: string, page = 1, limit = 0): Promise<IWord[]> {
   const category = await CategoryModel.findOne({ name });
-  return WordModel.find({ category: category._id })
-    .skip((page - 1) * limit)
-    .limit(limit);
+  if (category) {
+    return WordModel.find({ category: category._id })
+      .skip((page - 1) * limit)
+      .limit(limit);
+  }
+  return [];
 }
 
 async function add({

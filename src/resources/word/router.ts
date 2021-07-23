@@ -40,8 +40,8 @@ router.get(
   '/:category/words',
   handleErrors(async (req, res) => {
     const category = req.params.category.trim();
-    const page = (req.query?.page as string).trim();
-    const limit = (req.query?.limit as string).trim();
+    const page = (req.query?.page as string)?.trim();
+    const limit = (req.query?.limit as string)?.trim();
     const pageNumber = isValidNumber(Number(page)) ? Number(page) : 1;
     const limitNumber = isValidNumber(Number(limit))
       ? Number(limit)
@@ -82,7 +82,8 @@ router.put(
   handleErrors(async (req, res) => {
     let files: { [fieldname: string]: Express.Multer.File[] } = {};
     const word = req.params.word.trim();
-    const { category, word: newWord, translation } = req.body;
+    const category = req.params.category.trim();
+    const { word: newWord, translation } = req.body;
     try {
       files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (!checkStrings(word, newWord, category)) {
@@ -132,7 +133,8 @@ router.post(
   handleErrors(async (req, res) => {
     let files: { [fieldname: string]: Express.Multer.File[] } = {};
     let imageFiles = null;
-    const { category, word, translation } = req.body;
+    const category = req.params.category.trim();
+    const { word, translation } = req.body;
     try {
       files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (!checkStrings(word, category)) {

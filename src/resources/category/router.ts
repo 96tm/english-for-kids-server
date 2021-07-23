@@ -29,8 +29,8 @@ const handleErrors = ErrorHandler.handleErrors;
 router.get(
   '/',
   handleErrors(async (req, res) => {
-    const page = (req.query?.page as string).trim();
-    const limit = (req.query?.limit as string).trim();
+    const page = (req.query?.page as string)?.trim();
+    const limit = (req.query?.limit as string)?.trim();
     const pageNumber = isValidNumber(Number(page)) ? Number(page) : 1;
     const limitNumber = isValidNumber(Number(limit))
       ? Number(limit)

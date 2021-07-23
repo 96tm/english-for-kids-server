@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  title: English for kids
+  description: RSSchool task
+  version: 1.0.0
+
+servers:
+  - url: /
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+    Category:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        words:
+          type: array
+          items:
+            $ref: '#/components/schemas/Word'
+    Word:
+      required:
+        - word
+        - translation
+        - audioSrc
+      properties:
+        word:
+          type: string
+        translation:
+          type: string
+        audioSrc:
+          type: number
+        image:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+      tags:
+        - Login
+      security: []
+      summary: Login
+      description: Logins a user and returns a JWT-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: Successful login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                description: JWT Token
+        400:
+          description: Incorrect login or password
+
+  /categories:
+    get:
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            description: Determines how many documents should be skipped before retrieval
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Determines how many documents to retrieve (at most)
+      tags:
+        - Categories
+      summary: Get categories
+      description: Returns retrieved
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        400:
+          description: Bad request
+    post:
+      tags:
+        - Categories
+      summary: Create category
+      description: Creates a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string
+                  description: Category name
+              required:
+                - name
+      responses:
+        200:
+          description: The category has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /categories/{category}:
+    parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Updates a Category by name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                newName:
+                  type: string
+                  description: New name for the Category
+              required:
+                - newName
+      responses:
+        200:
+          description: The category has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Deletes a Category by name.
+        When somebody deletes Category,
+        all its Words get deleted as well
+      responses:
+        200:
+          description: The category has been deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        400:
+          description: Bad request
+
+  /categories/{category}/words:
+    parameters:
+      - in: path
+        name: category
+        required: true
+        schema:
+          type: string
+    get:
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            description: Determines how many documents should be skipped before retrieval
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Determines how many documents to retrieve (at most)
+      tags:
+        - Words
+      summary: Get Words by category name
+      description: Gets words by the category name
+        (e.g. “/categories/sports/words”)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Word'
+        400:
+          description: Bad request
+    post:
+      tags:
+        - Words
+      summary: Create new word
+      description: Creates a new word
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              title: example
+              properties:
+                word:
+                  type: string
+                  description: Word
+                translation:
+                  type: string
+                  description: Word
+                audio:
+                  type: string
+                  description: Audio file
+                  format: binary
+                image:
+                  type: string
+                  description: Image file
+                  format: binary
+              required:
+                - word
+                - translation
+                - audio
+            encoding:
+              audio:
+                contentType: audio/mpeg
+              image:
+                contentType: image/jpg, image/jpeg
+      responses:
+        200:
+          description: The word has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Word'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /categories/{category}/words/{word}:
+    parameters:
+      - in: path
+        name: category
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: word
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Words
+      summary: Update word
+      description: Updates a word
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              title: example
+              properties:
+                word:
+                  type: string
+                  description: Word
+                translation:
+                  type: string
+                  description: Word
+                audio:
+                  type: string
+                  description: Audio file
+                  format: binary
+                image:
+                  type: string
+                  description: Image file
+                  format: binary
+          encoding:
+            audio:
+              contentType: audio/mpeg
+            image:
+              contentType: image/jpg, image/jpeg
+      responses:
+        200:
+          description: The word has been created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Word'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Words
+      summary: Delete word
+      description: Deletes a word
+      responses:
+        200:
+          description: The word has been deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Word'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'

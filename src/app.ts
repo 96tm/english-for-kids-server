@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
+import swaggerUI from 'swagger-ui-express';
+
 import { v2 as cloudinary } from 'cloudinary';
 
 import { cloud_name, api_key, api_secret } from './config';
@@ -15,9 +17,12 @@ import { router as userRouter } from './resources/user/router';
 import { ErrorHandler } from './error-handling/ErrorHandler';
 import { StatusCodes } from 'http-status-codes';
 import CustomError from './error-handling/CustomError';
+import YAML from 'yamljs';
+import path from 'path';
 
 const app = express();
 const errorHandler = new ErrorHandler();
+const swaggerDocument = YAML.load(path.join(__dirname, './doc/api.yaml'));
 
 cloudinary.config({
   cloud_name,
@@ -27,7 +32,6 @@ cloudinary.config({
 });
 
 app.use(cors());
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use((req, res, next) => {
@@ -41,6 +45,7 @@ app.use((req, res, next) => {
 app.use('/', userRouter);
 app.use('/categories', categoriesRouter);
 app.use('/categories', wordsRouter);
+app.use('/', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use((req, res, next) => {
   next(new CustomError(StatusCodes.NOT_FOUND, 'Page not found'));
 });

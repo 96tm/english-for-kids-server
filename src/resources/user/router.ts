@@ -14,8 +14,6 @@ import { JWT_SECRET_KEY } from '../../config';
 
 import { AUTH_EXPIRATION_TIME } from '../../util/util';
 
-import { AuthService } from '../../auth/service';
-
 const handleErrors = ErrorHandler.handleErrors;
 
 const router = express.Router();
@@ -38,16 +36,6 @@ router.post(
     } else {
       throw new CustomError(StatusCodes.BAD_REQUEST, `User ${login} not found`);
     }
-  })
-);
-
-router.get(
-  '/logout',
-  AuthService.authorize,
-  handleErrors(async (req, res) => {
-    res
-      .clearCookie('token', { secure: true })
-      .json({ message: 'You have been logged out' });
   })
 );
 

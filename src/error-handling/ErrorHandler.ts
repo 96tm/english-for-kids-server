@@ -19,6 +19,7 @@ export class ErrorHandler {
     } else {
       const statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
       const message = ErrorHandler.SERVER_ERROR_MESSAGE;
+      console.error('Internal server error', err);
       res.status(statusCode).json({ status: 'error', statusCode, message });
     }
     next();

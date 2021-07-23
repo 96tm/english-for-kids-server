@@ -6,7 +6,7 @@ dotenv.config({
 });
 
 const PORT = process.env['PORT'];
-const JWT_SECRET_KEY = process.env['JWT_SECRET_KEY'];
+const JWT_SECRET_KEY = process.env['JWT_SECRET_KEY'] || 'super_secret';
 const MONGO_CONNECTION_STRING = String(process.env['MONGO_CONNECTION_STRING']);
 const SALT_ROUNDS = Number(process.env['SALT_ROUNDS']);
 const IMAGE_URL_PREFIX = 'https://res.cloudinary.com/rsschool/image/upload/';

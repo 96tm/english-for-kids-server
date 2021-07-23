@@ -11,7 +11,9 @@ const MONGO_DUPLICATION_ERROR_CODE = 11000;
 const AUTH_EXPIRATION_TIME = 60 * 60;
 
 function isValidNumber(number: number): boolean {
-  return 0 <= number && number <= Number.MAX_SAFE_INTEGER;
+  return (
+    Number.isInteger(number) && 0 <= number && number <= Number.MAX_SAFE_INTEGER
+  );
 }
 
 function checkStrings(...strings: string[]): boolean {
